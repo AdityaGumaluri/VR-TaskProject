@@ -6,38 +6,62 @@ using UnityEngine;
 
 public class SpawnItem : MonoBehaviour
 {
-    public GameObject spawnableItem;
+    #region Public Members
+
+    public ItemInfo itemTobeSpawned;
     public Transform spawnPos;
-    public bool isThrowableItem,loadAtStart;
+    public bool loadAtStart;
+    public GameObject currentSpawnedItem{ get; private set; }
 
-    private GameObject currentItem;
-    private Transform IntialSpawnPos;
+    #endregion
 
+    ItemCollector collector;
 
+    #region BuiltInMethods
     // Start is called before the first frame update
     void Start()
     {
+        collector = ItemCollector.Instance;
+        //spawning Item on start when boolean is true
         if(loadAtStart)
         {
-            SpawnItems();
+            InstantiateItem();
         }
     }
+    #endregion
 
-    //Spawning ItemSets 
-    public void SpawnItems()
+
+    #region CustomMethods
+
+    //spawns Item in the scene
+    public void InstantiateItem()
     {
-         //If not throwable destroy the existing item
-         if (currentItem!=null&&!isThrowableItem)
-         {
-            Destroy(currentItem);
-         }
-         //instantiating the Prefab item.
-         currentItem = Instantiate(spawnableItem)as GameObject;
-         if(spawnPos!=null)
-         {
-            currentItem.transform.position = spawnPos.position;
-         }
-         print("ItemSpawned");
-        
+        if (itemTobeSpawned != null)
+        {
+            collector.onItemsCleared -= InstantiateItem;
+
+            //if item is not a throwable destroying the existing item when another getting created.
+            if (currentSpawnedItem != null&!itemTobeSpawned.isThrowable)
+            {
+                Destroy(currentSpawnedItem);
+            }
+
+            //If spawnPos is null making the item default pos as spawnPos
+            if (spawnPos == null)
+            {
+                spawnPos = itemTobeSpawned.itemPrefab.transform;
+            }
+
+            currentSpawnedItem = Instantiate(itemTobeSpawned.itemPrefab);
+            currentSpawnedItem.transform.position = spawnPos.position;
+
+            //Adding spawned item in the list
+            collector.AddItems(currentSpawnedItem);
+            if(loadAtStart)
+            {
+                collector.onItemsCleared += InstantiateItem;
+            }
+        }
     }
+    #endregion
 }

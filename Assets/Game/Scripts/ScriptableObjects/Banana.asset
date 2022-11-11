@@ -14,5 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemPrefab: {fileID: 8297075312650842934, guid: cb5dc403d3d02aa429c6dbeeb2ee38b4,
     type: 3}
-  itemTransform: {fileID: 7532756145559007343, guid: cb5dc403d3d02aa429c6dbeeb2ee38b4,
-    type: 3}
+  isThrowable: 1
